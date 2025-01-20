@@ -12,8 +12,9 @@ def load_tickets():
         with open(f"users_tickets.json", "r") as f:
             data = json.load(f)
         st.session_state['tickets'] = [t for t in data['tickets'] if t['ID'] == st.session_state["user_id"]]        
+        st.info("File opened successfully")
     except FileNotFoundError:
-        pass
+        st.info("Warning: File not found!")
 
 # Initialize tickets in session state if not already present
 load_tickets()
