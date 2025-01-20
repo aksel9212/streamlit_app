@@ -5,14 +5,13 @@ import json
 
 def save_tickets():
     tickets = {"tickets":st.session_state["tickets"]}
-    with open(f"users_data/{st.session_state['user_id']}/tickets.json", "w") as f:
+    with open(f"users_tickets.json", "w") as f:
         json.dump(tickets, f)
 def load_tickets():
-    st.title(f"user {st.session_state['user_id']} connected.");
     try:
-        with open(f"users_data/{st.session_state['user_id']}/tickets.json", "r") as f:
+        with open(f"users_tickets.json", "r") as f:
             data = json.load(f)
-        st.session_state['tickets'] = data['tickets']        
+        st.session_state['tickets'] = [t for t in data['tickets'] if t['ID'] == st.session_state["user_id"]]        
     except FileNotFoundError:
         pass
 
@@ -29,6 +28,7 @@ st.title("Help Tickets Service")
 with st.form("ticket_form", clear_on_submit=True):
     name = st.session_state["username"]
     email = st.session_state["user_email"]
+    user_id = st.session_state["user_id"]
     #issue = st.text_area("Describe Your Issue")
     # Use form_submit_button for submission
     submitted = st.form_submit_button("Create New Ticket")
@@ -37,6 +37,7 @@ with st.form("ticket_form", clear_on_submit=True):
 if submitted:
     if name and email:
         ticket = {
+            "ID":user_id,
             "Name": name,
             "Email": email,
             #"Issue": issue,
