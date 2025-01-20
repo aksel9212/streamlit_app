@@ -5,17 +5,16 @@ import json,os
 
 def save_tickets():
     tickets = {"tickets":st.session_state["tickets"]}
-    with open(f"users_tickets.json", "w") as f:
+    with open(f"test_app/users_tickets.json", "w") as f:
         json.dump(tickets, f)
 def load_tickets():
     try:
-        st.info(str(os.listdir()))
-        with open(f"users_tickets.json", "r") as f:
+        with open(f"test_app/users_tickets.json", "r") as f:
             data = json.load(f)
         st.session_state['tickets'] = [t for t in data['tickets'] if t['ID'] == st.session_state["user_id"]]        
-        st.info("File opened successfully")
+        
     except FileNotFoundError:
-        st.info(str(os.listdir()))
+        st.info("File Not Found")
 
 # Initialize tickets in session state if not already present
 load_tickets()
