@@ -78,7 +78,7 @@ def main():
             default=True
         )
         project_2_page = st.Page(
-            "views/chatbot.py",
+            "views/app2.py",
             title="Chat with us",
             icon=":material/smart_toy:",
         )

@@ -48,7 +48,7 @@ if submitted:
         st.session_state["tickets"].append(ticket)
         save_tickets()
         st.success("Ticket submitted successfully!")
-        st.switch_page("views/chatbot.py")
+        st.switch_page("views/app2.py")
     else:
         st.error("Please fill in all fields.")
 
