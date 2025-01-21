@@ -1,4 +1,8 @@
 pandas
 streamlit
 st-gsheets-connection
-
+python-dotenv
+ollama
+groq
+openai
+google-generativeai
