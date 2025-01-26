@@ -52,7 +52,8 @@ class AiDialogExpert:
             }
         ]
         if dialog != None:
-            self.messages.append(dialog)
+            #self.messages.append(dialog)
+            self.messages += dialog
 
     def set_user_data(self, userid, name, email, user_data):
         self.userid = userid
@@ -61,18 +62,18 @@ class AiDialogExpert:
         self.user_data = user_data
 
     def get_next_response(self, user_input):
-        # add user input to messages
+        print('# add user input to messages')
         self.messages.append({"role": "user", "content": user_input})
         # generate response
         response = self.llm_dialog.response_generator(self.messages)
-        # add repsonse to messsages
+        print('# add repsonse to messsages')
         self.messages.append({"role": "assistant", "content": response})
         return response
 
     # get current dialog     
     def get_current_dialog(self):
         dialog = []    
-        print(self.messages)
+        print("self.messages",self.messages)
         for msg in self.messages:
             # filter systemprompt
             if msg["role"] != "system": 

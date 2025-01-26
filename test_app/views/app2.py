@@ -2,26 +2,32 @@ import streamlit as st
 import json
 import os
 from dotenv import load_dotenv
+import pandas as pd
 import sys
 import codecs
 from views.aidialogexpert import AiDialogExpert
 from textwrap import dedent
+from streamlit_gsheets import GSheetsConnection
 
-FNAME_MESSAGES_SAVE = "messages.json"
 key = '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'
+
 if "GROQAPI" not in os.environ:
     os.environ['GROQAPI'] = key
+
+def save_user_tickets():
+    tickets = st.session_state["tickets"] 
+    with open(f"test_app/users_data/{st.session_state['user_id']}/tickets.json", "w") as f:
+        json.dump(tickets, f)
+
 def dump_messages(messages, filepath):
     with open(filepath + FNAME_MESSAGES_SAVE, "w") as f:
         json.dump(messages, f)
-
     return
 
 def get_saved_messages(filepath):
     if os.path.isfile(filepath + FNAME_MESSAGES_SAVE) == False:
         messages = []
         return messages
-    
     with open(filepath + FNAME_MESSAGES_SAVE, "r") as f:
         messages = json.load(f)
         return messages  
@@ -45,22 +51,33 @@ if "aidialogexpert" not in st.session_state:
         Für die Umsatzsteuererklärung ist hier im Steuerbüro Frau Steinmeier zuständig. 
     """)
 
-    st.session_state.aidialogexpert = AiDialogExpert(1, "Peter Parker", "peterparker@ticket01.com", TEST_USER_DATA, None)
+    st.session_state.aidialogexpert = AiDialogExpert(st.session_state["user_id"],
+                                        st.session_state["username"],
+                                        st.session_state["user_email"],
+                                        TEST_USER_DATA, 
+                                        None
+                                    )
 
-  
 # Display chat messages from history on app rerun
 dialog = st.session_state.aidialogexpert.get_current_dialog()
 with st.sidebar:
-    if st.button("Save dialog"):
-        dump_messages(dialog, "")              
+    if st.button("Save ticket"):
+        #dump_messages(dialog, "")
+        dialog = st.session_state.aidialogexpert.get_current_dialog()
+        st.session_state["tickets"][st.session_state["current_ticket"]]["Dialog"] = json.dumps(dialog, allow_nan=True)
+        #update_tickets()
+        save_user_tickets()              
 
-    if st.button("Load dialog"):
-        dialog = get_saved_messages("")              
-        st.session_state.aidialogexpert.set_dialog(dialog)          
+    #if st.button("Load dialog"):
+    #    dialog = get_saved_messages("")              
+    st.session_state.aidialogexpert.set_dialog(dialog)
+    try:
+        st.markdown(st.session_state["tickets"][st.session_state["current_ticket"]]["Description"]) 
+    except:
+        pass         
 
 for message in dialog:
     if message["role"] != "system":
-        print(message["role"], ":", message["content"] )
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
@@ -79,7 +96,8 @@ if text_prompt is not None:
         st.markdown(response)
 
     # build protocol
-    protocol = st.session_state.aidialogexpert.get_protocol()            
+    protocol = st.session_state.aidialogexpert.get_protocol() 
+    st.session_state["tickets"][st.session_state["current_ticket"]]["Description"] = protocol           
     # debug output in sidebar
     with st.sidebar:
         st.markdown(protocol)
