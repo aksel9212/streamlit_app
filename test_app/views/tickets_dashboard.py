@@ -60,6 +60,17 @@ card_style = """
         .card-button:hover {
             background-color: darkgreen;
         }
+        .card-date >p {
+            font-size:14px;
+        }
+        .card-header{
+            font-size:20px;
+            font-weight:bold;
+        }
+        .card-status {
+            display:flex;
+            justify-content:space-between;
+        }
     </style>
 """
 st.markdown(card_style, unsafe_allow_html=True)
@@ -87,9 +98,9 @@ if submitted:
             "Ticket_id": len(st.session_state["tickets"]),
             "Expert_id": 1,
             "Creation_date": '2024-01-23',
-            "Description":'some discription',
+            "Description":'',
             "Priority": priority,
-            "State": "Open",
+            "State": 1,
             "Dialog":""
         }
         st.session_state["tickets"].append(ticket)
@@ -130,15 +141,27 @@ if st.session_state["tickets"]:
                     with cols[j]:
                         ticket_info = st.session_state["tickets"][card_index]
                         # Card content
+                        try:
+                            resolve_date = f"Resolve date: {ticket_info['Resolve_date']}."
+                        except:
+                            resolve_date = ''
+                        
                         st.markdown(
                             f"""
                             <div class="card">
                                 <div class="card-content">
-                                    <h4>Ticket {card_index + 1}</h4>
-                                    <p>Description: {ticket_info['Description'][:50]} ...</p>
-                                    <p>Creation date: {ticket_info['Creation_date']}.</p>
-                                    <p>Priority: {ticket_info['Priority']}</p>
-                                    <p>Status: {ticket_info['State']}</p>
+                                    <div class='card-status'>
+                                        <h4>0{card_index + 1}</h4>
+                                        <img width='36' src='../assets/{ticket_info['State']}.png'>
+                                    </div>
+                                    <div class='card-header'>
+                                        this is a header
+                                    </div>
+                                    <div class='card-date'>
+                                        <p>Creation date: {ticket_info['Creation_date']}.</p>
+                                        <p>{resolve_date}</p>
+                                    </div>
+                                    <p>Priority: {ticket_info['Priority']}</p> 
                                 </div>
                             </div>
                             """,

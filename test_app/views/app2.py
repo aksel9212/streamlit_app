@@ -72,9 +72,10 @@ with st.sidebar:
     #    dialog = get_saved_messages("")              
     st.session_state.aidialogexpert.set_dialog(dialog)
     try:
-        st.markdown(st.session_state["tickets"][st.session_state["current_ticket"]]["Description"]) 
+        #st.markdown(st.session_state["tickets"][st.session_state["current_ticket"]]["Description"])
+        st.sidebar.image(f"test_app/assets/{st.session_state["tickets"][st.session_state["current_ticket"]]["State"]}.jpg",width=525) 
     except:
-        pass         
+        st.info(f"file not found: test_app/assets/{st.session_state["tickets"][st.session_state["current_ticket"]]["State"]}.jpg")        
 
 for message in dialog:
     if message["role"] != "system":
@@ -98,13 +99,12 @@ if text_prompt is not None:
     # build protocol
     protocol = st.session_state.aidialogexpert.get_protocol() 
     st.session_state["tickets"][st.session_state["current_ticket"]]["Description"] = protocol           
+    status = st.session_state.aidialogexpert.get_status(protocol)
+    st.session_state["tickets"][st.session_state["current_ticket"]]["State"] = status
     # debug output in sidebar
     with st.sidebar:
-        st.markdown(protocol)
-   
+        #st.markdown(protocol)
         # generate status
-        status = st.session_state.aidialogexpert.get_status(protocol) 
-
         st.markdown("## Klassifikation: ##")
-        st.markdown(status)
+        st.sidebar.image(f"test_app/assets/{status}.jpg",width=50)
 
