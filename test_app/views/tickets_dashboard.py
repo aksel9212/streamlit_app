@@ -26,14 +26,17 @@ card_style = """
     <style>
         .stButton{
             display: flex;
-            justify-content: center;
-            /*margin-top:-70px;*/
+            /*justify-content: center;
+            margin-top:-70px;*/
+        }
+        .st-emotion-cache-1dtfyw6 {
+            margin-left:30px;
         }
         .stImage{
             display:none;
         }
         .card {
-            border: 2px solid green;
+            border: 2px solid #00A2E8;
             border-radius: 8px;
             padding: 16px;
             padding-bottom: 50px;
@@ -112,8 +115,7 @@ if submitted:
         }
         st.session_state["tickets"].append(ticket)
         st.session_state["current_ticket"] = ticket["Ticket_id"]
-        #save_tickets()
-        print("st.session_state[tickets]",st.session_state["tickets"])
+        
         st.success("Ticket submitted successfully!")
         if "aidialogexpert" in st.session_state:
             del(st.session_state['aidialogexpert'])
@@ -124,7 +126,7 @@ if submitted:
 # Display all tickets dynamically
 st.header("Submitted Tickets")
 if st.session_state["tickets"]:
-    print("st.session_state;",st.session_state["tickets"])
+    
     #tickets_df = pd.DataFrame(st.session_state["tickets"])
     #st.table(tickets_df)
 
@@ -204,9 +206,9 @@ if st.session_state["tickets"]:
                                                                 )
                                 st.switch_page("views/app2.py")
                         with col2:
-                            if st.session_state["tickets"][card_index]["State"] != "Resolved":
+                            if st.session_state["tickets"][card_index]["State"] != 3:
                                 if st.button(f"Mark as Solved", key=f"solved_{card_index}"):
-                                    st.session_state["tickets"][card_index]["State"] = "Resolved"
+                                    st.session_state["tickets"][card_index]["State"] = 3
                                     st.switch_page("views/tickets_dashboard.py")
     
                                     

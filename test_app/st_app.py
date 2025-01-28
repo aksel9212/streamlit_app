@@ -11,10 +11,8 @@ def check_login_(username, password):
 
     conn = st.connection("gsheets", type=GSheetsConnection)
     data = conn.read(spreadsheet=url)
-    print(data)
     df = pd.DataFrame(data)
     data_dict = df.to_dict(orient='records') 
-    print(data_dict)
     for user_info in data_dict:
         if user_info['Username'] == username:
             return user_info['Password'] == password, user_info
@@ -59,7 +57,6 @@ def main():
         # Login button
         if st.button("Login"):
             valid_login, user_info = check_login_(username, password) 
-            print(user_info)
             if valid_login:
                 st.session_state["logged_in"] = True
                 st.session_state["username"] = username
