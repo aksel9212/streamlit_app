@@ -1,10 +1,11 @@
 import streamlit as st
 import pandas as pd
 import json,os
+from datetime import datetime
 from views.aidialogexpert import AiDialogExpert
 from streamlit_gsheets import GSheetsConnection
 from streamlit_javascript import st_javascript
-
+st.session_state['return_btn_label'] = 'Logout'
 def load_user_tickets():
     try:
         with open(f"test_app/users_data/{st.session_state['user_id']}/tickets.json", "r") as f:
@@ -40,6 +41,7 @@ card_style = """
             background-color: rgba(0, 0, 0, 0); /* Transparent background */
             text-align: center; /* Center the content inside the card */
             margin-bottom:-70px;
+            min-height: 300px;
         }
         .card:hover {
             box-shadow: 2px 2px 8px rgba(0, 128, 0, 0.5);
@@ -67,7 +69,7 @@ card_style = """
         .card-date >p {
             font-size:14px;
         }
-        .card-header{
+        .card-header>p {
             font-size:20px;
             font-weight:bold;
         }
@@ -101,11 +103,12 @@ if submitted:
             "User_id":user_id,
             "Ticket_id": len(st.session_state["tickets"]),
             "Expert_id": 1,
-            "Creation_date": '2024-01-23',
+            "Creation_date": datetime.today().strftime("%Y-%m-%d"),
             "Description":'',
             "Priority": priority,
             "State": 1,
-            "Dialog":""
+            "Dialog":"",
+            "Header":"New Ticket"
         }
         st.session_state["tickets"].append(ticket)
         st.session_state["current_ticket"] = ticket["Ticket_id"]
@@ -137,6 +140,11 @@ if st.session_state["tickets"]:
     url = st_javascript("await fetch('').then(r => window.parent.location.href)")
     with st.container():
         num_cards = len(st.session_state["tickets"])
+        hashes = {
+            '1':'0366849854fd27763c0902b4cda71297e44aa5512bc2ffa8436eb4a3',
+            '2':'43bfe808ec124a660daca73038eba839992a5e768230bb0a365160c7',
+            '3':'dc3d5aaa1974444cf9d8aab82d439c2ab69c373a656e4ab787710ded'
+        }
         for i in range(0, num_cards, 2):
             cols = st.columns(2)  # Create 3 columns
             for j in range(2):
@@ -146,24 +154,28 @@ if st.session_state["tickets"]:
                         ticket_info = st.session_state["tickets"][card_index]
                         # Card content
                         try:
-                            resolve_date = f"Resolve date: {ticket_info['Resolve_date']}."
+                            resolve_date = f"Gelöst am: {ticket_info['Resolve_date']}"
                         except:
                             resolve_date = ''
                         
-                        st.image(f"test_app/assets/{ticket_info['State']}.png")
+                        ago = (datetime.now() - datetime(*[int(i) for i in ticket_info['Creation_date'].split("-")])).days
+                        if ago == 0:
+                            ago = ''
+                        else:
+                            ago = f"   ( vor {ago} tagen )"
                         st.markdown(
                             f"""
                             <div class="card">
                                 <div class="card-content">
                                     <div class='card-status'>
                                         <h4>0{card_index + 1}</h4>
-                                        <img width='36' height='36' src='{url}media/0366849854fd27763c0902b4cda71297e44aa5512bc2ffa8436eb4a3.png'>
+                                        <img width='36' height='36' src='{url}media/{hashes[str(ticket_info['State'])]}.png'>
                                     </div>
                                     <div class='card-header'>
-                                        this is a header
+                                        <p>{ticket_info['Header']}</p>
                                     </div>
                                     <div class='card-date'>
-                                        <p>Creation date: {ticket_info['Creation_date']}.</p>
+                                        <p>Erstellt am: {ticket_info['Creation_date']} {ago}</p>
                                         <p>{resolve_date}</p>
                                     </div>
                                     <p>Priority: {ticket_info['Priority']}</p> 
@@ -202,3 +214,6 @@ else:
     st.info("No tickets submitted yet.")
 
 
+st.image(f"test_app/assets/1.png")
+st.image(f"test_app/assets/2.png")
+st.image(f"test_app/assets/3.png")

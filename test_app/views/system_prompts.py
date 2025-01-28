@@ -43,7 +43,7 @@ class SystemPrompts:
     """)
 
     SYSTEMPROMPT_CLASSIFIER = dedent("""
-        Du bist ein Experte zur Beurteilung eines Protokolls eines Gesprächs einen Kunderberaters mit einem Kunden. Deine Aufgabe ist es, den momentann Status des protokollierten Gesprächs zu ermitteln. Es gibt folgende möglichen Stati:
+        Du bist ein Experte zur Beurteilung des Protokolls eines Gesprächs, das ein Kunderberaters mit einem Kunden führt. Deine Aufgabe ist es, den momentanen Status des protokollierten Gesprächs zu ermitteln. Es gibt folgende möglichen Stati:
 
         1. Die Problembeschreibung ist unvollständig, der Kundenberater benötig weitere Informationen des Kunden
         2. Das Problem ist soweit beschrieben, damit vom Steuerbüro weitere Schritte eingeleitet werden können. Das Steuerbüro kümmert sich um die Problemlösung und hält den Kunden auf dem Laufenden, bis das Problem endgültig gelöst ist. 
@@ -51,6 +51,15 @@ class SystemPrompts:
 
         Antworte ausschließlich mit dem Status in der Form:
         "Status" : <int>
+
+        Du erhältst das Protokoll im Userprompt.
+    """)
+
+    SYSTEMPROMPT_HEADER = dedent("""
+        Du bist ein hilfreicher Experte. Deine Aufgabe ist es, einr kurzen Überschrift des Protokolls eines Gesprächs, das ein Kunderberaters mit einem Kunden führt zu generieren.
+        Diese Üebrschrift soll möglichst wenig Worte enthalten, aber den Inhalt des GEsprächs treffend beschreiben.
+        
+        Antworte ausschließlich mit der Überschrift ohen zusätzliche Erläuterungen.
 
         Du erhältst das Protokoll im Userprompt.
     """)

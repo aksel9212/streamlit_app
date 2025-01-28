@@ -121,3 +121,16 @@ class AiDialogExpert:
         status = self.status_classifier.set_status(status_response)
         return status
     
+    def get_ticket_header(self, protocol):
+        messages_header = [
+            {
+            "role": "system",
+            "content": SystemPrompts.SYSTEMPROMPT_HEADER,
+            },
+            {
+            "role": "user",
+            "content": protocol,
+            }
+        ]
+        header = self.llm_class.response_generator(messages_header)
+        return header

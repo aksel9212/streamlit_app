@@ -3,6 +3,8 @@ import pandas as pd
 import json
 from streamlit_gsheets import GSheetsConnection
 
+
+st.session_state['return_btn_label'] = 'Logout'
 def check_login_(username, password):
     
     url = "https://docs.google.com/spreadsheets/d/1RPZ0Pkip0qNRyPrY1QUzsk7UD9ChRHNRJYi-XDl5xrA/edit?usp=sharing"
@@ -89,7 +91,10 @@ def main():
         # --- RUN NAVIGATION ---
         pg.run()
         # Logout button in sidebar
-        if st.sidebar.button("Logout"):
+        if st.sidebar.button(st.session_state['return_btn_label'],key='return'):
+            if st.session_state['return_btn_label'] == 'Zurück':
+                st.switch_page("views/tickets_dashboard.py")
+
             st.session_state["logged_in"] = False
             st.session_state["username"] = ""
             st.session_state["user_email"] = ""
