@@ -102,9 +102,9 @@ if text_prompt is not None:
     status = st.session_state.aidialogexpert.get_status(protocol)
     st.session_state["tickets"][st.session_state["current_ticket"]]["State"] = status
     # debug output in sidebar
-    with st.sidebar:
+    #with st.sidebar:
         #st.markdown(protocol)
         # generate status
-        st.markdown("## Klassifikation: ##")
-        st.sidebar.image(f"test_app/assets/{status}.jpg",width=50)
+    #    st.markdown("## Klassifikation: ##")
+    #    st.sidebar.image(f"test_app/assets/{status}.jpg",width=50)
 

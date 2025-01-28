@@ -3,6 +3,7 @@ import pandas as pd
 import json,os
 from views.aidialogexpert import AiDialogExpert
 from streamlit_gsheets import GSheetsConnection
+from streamlit_javascript import st_javascript
 
 def load_user_tickets():
     try:
@@ -26,6 +27,9 @@ card_style = """
             display: flex;
             justify-content: center;
             /*margin-top:-70px;*/
+        }
+        .stImage{
+            display:none;
         }
         .card {
             border: 2px solid green;
@@ -130,7 +134,7 @@ if st.session_state["tickets"]:
     #    )
 
     # Layout the cards in rows of 3
-    
+    url = st_javascript("await fetch('').then(r => window.parent.location.href)")
     with st.container():
         num_cards = len(st.session_state["tickets"])
         for i in range(0, num_cards, 2):
@@ -146,13 +150,14 @@ if st.session_state["tickets"]:
                         except:
                             resolve_date = ''
                         
+                        st.image(f"test_app/assets/{ticket_info['State']}.png")
                         st.markdown(
                             f"""
                             <div class="card">
                                 <div class="card-content">
                                     <div class='card-status'>
                                         <h4>0{card_index + 1}</h4>
-                                        <img width='36' src='../assets/{ticket_info['State']}.png'>
+                                        <img width='36' height='36' src='{url}media/0366849854fd27763c0902b4cda71297e44aa5512bc2ffa8436eb4a3.png'>
                                     </div>
                                     <div class='card-header'>
                                         this is a header
