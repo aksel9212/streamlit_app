@@ -1,4 +1,3 @@
-import os
 import streamlit as st
 import pandas as pd
 import json
@@ -19,19 +18,29 @@ def check_login_(username, password):
             return user_info['Password'] == password, user_info
     return False, {}
 
+def check_login(username, password):
+    
+    with open("experts_test_app/experts.json", "r") as f:
+        experts = json.load(f)
+    print(experts)
+    for expert_data in experts:
+        if expert_data['Username'] == username:
+            return expert_data['Password'] == password, expert_data
+    return False, {}
+
 def save_session():
     session_data = {
         "logged_in":st.session_state["logged_in"],
         "username":st.session_state["username"],
         "user_id":st.session_state["user_id"], 
-        "user_email":st.session_state["user_email"]
+        #"user_email":st.session_state["user_email"]
     }
-    with open("session_data.json", "w") as f:
+    with open("expert_session_data.json", "w") as f:
         json.dump(session_data, f)
 
 def load_session():    
     try:
-        with open("session_data.json", "r") as f:
+        with open("expert_session_data.json", "r") as f:
             session_data = json.load(f)
         for key, value in session_data.items():
             st.session_state[key] = value
@@ -41,8 +50,13 @@ def load_session():
 
 # Define the main function
 def main():
-    with open("file.txt") as f:
-        st.info(f.read())
+    import random
+    import string
+
+    length = 8
+    random_string = ''.join(random.choices(string.digits, k=length))
+    with open("file.txt","w") as f:
+        f.write(random_string)
     load_session()
 
     if "logged_in" not in st.session_state:
@@ -51,7 +65,7 @@ def main():
     if "username" not in st.session_state:
         st.session_state["username"] = ""
     if st.session_state["logged_in"] == False:
-        st.title("Login Page")
+        st.title("Experts Login Page")
         
         # Input fields for login
         username = st.text_input("Username")
@@ -59,19 +73,18 @@ def main():
         
         # Login button
         if st.button("Login"):
-            valid_login, user_info = check_login_(username, password) 
+            valid_login, user_info = check_login(username, password) 
             if valid_login:
                 st.session_state["logged_in"] = True
                 st.session_state["username"] = username
                 st.session_state["user_id"] = user_info['ID']
-                st.session_state["user_email"] = user_info['Email']
+                #st.session_state["user_email"] = user_info['Email']
                 st.success("Successfully logged in!")
                 save_session()
                 st.rerun()
             else:
                 st.error("Invalid username or password.")
-        if st.button("Log as expert"):
-            st.switch_page("experts_test_app/st_app.py")
+
     # Dashboard Page
     else:
         project_1_page = st.Page(
@@ -82,7 +95,7 @@ def main():
         )
         project_2_page = st.Page(
             "views/app2.py",
-            title="Chat with us",
+            title="Edit ticket",
             icon=":material/smart_toy:",
         )
 
@@ -98,11 +111,11 @@ def main():
 
             st.session_state["logged_in"] = False
             st.session_state["username"] = ""
-            st.session_state["user_email"] = ""
+            #st.session_state["user_email"] = ""
             st.session_state["user_id"] = 0
             save_session()
                 
-            st.navigation([project_1_page, project_2_page],position="hidden")
+            st.navigation([project_1_page],position="hidden")
             st.rerun()
         
         save_session()

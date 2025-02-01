@@ -1,0 +1,9 @@
+pandas
+streamlit
+st-gsheets-connection
+streamlit-javascript
+python-dotenv
+ollama
+groq
+openai
+google-generativeai
