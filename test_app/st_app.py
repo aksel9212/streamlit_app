@@ -41,8 +41,10 @@ def load_session():
 
 # Define the main function
 def main():
-    with open("file.txt") as f:
-        st.info("sahred code:"+f.read())
+    
+    st.info("secrets:"+st.secrets.google_creds)
+
+
     load_session()
 
     if "logged_in" not in st.session_state:
@@ -71,7 +73,7 @@ def main():
             else:
                 st.error("Invalid username or password.")
         if st.button("Log as expert"):
-            st.switch_page("experts_test_app/st_app.py")
+            st.switch_page("../experts_test_app/views/tickets_dashboard.py")
     # Dashboard Page
     else:
         project_1_page = st.Page(
