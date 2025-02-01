@@ -42,7 +42,7 @@ def load_session():
 # Define the main function
 def main():
     with open("file.txt") as f:
-        st.info(f.read())
+        st.info("sahred code:"+f.read())
     load_session()
 
     if "logged_in" not in st.session_state:
