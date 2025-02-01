@@ -45,7 +45,7 @@ def update_tickets(keys):
     #try:
     tickets_link = "https://docs.google.com/spreadsheets/d/175gz5oOXyfAJZjGKumuPd30YKGQl5ORitKZ-lJDGoRc/edit?usp=sharing"
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-    credentials = Credentials.from_service_account_file(keys, scopes=SCOPES)
+    credentials = Credentials.from_service_account_info(dict(keys), scopes=SCOPES)
     gc = gspread.authorize(credentials)
     spreadsheet = gc.open_by_url(tickets_link)
     worksheet = spreadsheet.get_worksheet(0)
