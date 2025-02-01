@@ -42,7 +42,7 @@ def load_session():
 # Define the main function
 def main():
     
-    st.info("secrets:"+st.secrets.google_creds)
+    st.info(st.secrets.google_creds)
 
 
     load_session()
