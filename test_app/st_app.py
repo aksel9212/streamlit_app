@@ -39,10 +39,19 @@ def load_session():
     except FileNotFoundError:
         pass
 
+def update_tickets(keys):
+    #try:
+    tickets_link = "https://docs.google.com/spreadsheets/d/175gz5oOXyfAJZjGKumuPd30YKGQl5ORitKZ-lJDGoRc/edit?usp=sharing"
+    SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+    credentials = Credentials.from_service_account_file(keys, scopes=SCOPES)
+    gc = gspread.authorize(credentials)
+    spreadsheet = gc.open_by_url(tickets_link)
+    worksheet = spreadsheet.get_worksheet(0)
+    return worksheet.get_all_records()
 # Define the main function
 def main():
     
-    st.info(st.secrets.google_creds)
+    st.info(update_tickets( st.secrets.google_creds ))
 
 
     load_session()
