@@ -5,7 +5,50 @@ from datetime import datetime
 from views.aidialogexpert import AiDialogExpert
 from streamlit_gsheets import GSheetsConnection
 from streamlit_javascript import st_javascript
+import gspread
+from google.oauth2.service_account import Credentials
+
 st.session_state['return_btn_label'] = 'Logout'
+tickets_link = "https://docs.google.com/spreadsheets/d/175gz5oOXyfAJZjGKumuPd30YKGQl5ORitKZ-lJDGoRc/edit?usp=sharing"
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+
+
+def delete_tickets(keys,index):
+    st.session_state["tickets"].pop(index)
+    credentials = Credentials.from_service_account_info(keys, scopes=SCOPES)
+    gc = gspread.authorize(credentials)
+    spreadsheet = gc.open_by_url(tickets_link)
+    worksheet = spreadsheet.get_worksheet(0)
+    data_dict = worksheet.get_all_records()
+    
+    n = 0
+    found = False
+    for i in range(len(data_dict)):
+        if st.session_state["tickets"][index]["User_id"] == data_dict[i]["User_id"] and st.session_state["tickets"][index]["Ticket_id"] == data_dict[i]["Ticket_id"]:
+            n = i
+            found = True
+            break
+    print("found:",found,"n:",n)
+    if not found:
+        return False
+    
+    data_dict.pop(n)
+    print(data_dict)
+    #conn.update(spreadsheet=spreadsheet,data=data_dict)
+    keys = list(data_dict[0].keys())
+    values = [list(d.values()) for d in data_dict]
+    df = pd.DataFrame([keys] + values)
+    print("PD:",[keys] + values)
+    worksheet.update([keys] + values)
+
+def load_tickets(keys):
+    #try:
+    credentials = Credentials.from_service_account_info(dict(keys), scopes=SCOPES)
+    gc = gspread.authorize(credentials)
+    spreadsheet = gc.open_by_url(tickets_link)
+    worksheet = spreadsheet.get_worksheet(0)
+    st.session_state['tickets'] = [ticket for ticket in worksheet.get_all_records() if ticket['Expert_id'] == st.session_state["user_id"]]
+
 def load_user_tickets():
 
     try:
@@ -16,11 +59,14 @@ def load_user_tickets():
     except FileNotFoundError:
         pass
 
+
+
 # Initialize tickets in session state if not already present
 
 if "tickets" not in st.session_state:
     st.session_state["tickets"] = []
-    load_user_tickets()
+    #load_user_tickets()
+    load_tickets(dict(st.secrets.google_creds))
 
 
 # Custom CSS for transparent cards with centered content
@@ -116,14 +162,19 @@ if st.session_state["tickets"]:
             '2':'43bfe808ec124a660daca73038eba839992a5e768230bb0a365160c7',
             '3':'dc3d5aaa1974444cf9d8aab82d439c2ab69c373a656e4ab787710ded'
         }
-        for i in range(0, num_cards, 2):
-            cols = st.columns(2)  # Create 3 columns
-            for j in range(2):
+        for i in range(0, num_cards, 1):
+            cols = st.columns(1)  # Create 3 columns
+            for j in range(1):
                 card_index = i + j
                 if card_index < num_cards:
                     with cols[j]:
                         if "Comments" not in st.session_state["tickets"][card_index]:
                             st.session_state["tickets"][card_index]["Comments"] = [] 
+                        else:
+                            try:
+                                st.session_state["tickets"][card_index]["Comments"] = json.loads(st.session_state["tickets"][card_index]["Comments"])
+                            except:
+                                pass
                         ticket_info = st.session_state["tickets"][card_index]
                         # Card content
                         try:
@@ -170,23 +221,23 @@ if st.session_state["tickets"]:
 
                                 # Save the parameter in the session state
                                 ticket_info = st.session_state["tickets"][card_index]
-                                st.session_state["current_ticket"] = ticket_info["Ticket_id"]
-                                #st.session_state['aidialogexpert'] = AiDialogExpert(
-                                #                                    st.session_state["user_id"],
-                                #                                    st.session_state["username"],
-                                #                                    st.session_state["user_email"],
-                                #                                    ticket_info['Description'], 
-                                #                                    json.loads(ticket_info['Dialog'])
-                                #                                )
+                                st.session_state["current_ticket"] = card_index#ticket_info["Ticket_id"]
+                                st.session_state['aidialogexpert'] = AiDialogExpert(
+                                                                    ticket_info["User_id"],
+                                                                    ticket_info["Username"],
+                                                                    ticket_info["User_email"],
+                                                                    ticket_info['Description'], 
+                                                                    json.loads(ticket_info['Dialog'])
+                                                                )
                                 st.switch_page("views/app2.py")
                         with col2:
                             if st.session_state["tickets"][card_index]["State"] != 3:
-                                if st.button(f"Mark as solved", key=f"solved_{card_index}"):
+                                if st.button(f"Mark ticket as solved", key=f"solved_{card_index}"):
                                     st.session_state["tickets"][card_index]["State"] = 3
                                     st.switch_page("views/tickets_dashboard.py")
                         with col3:
-                            if st.button("Delete", key=f"delete_{card_index}"):
-                                    st.session_state["tickets"].pop(card_index)
+                            if st.button("Delete ticket", key=f"delete_{card_index}"):
+                                    delete_tickets(dict(st.secrets.google_creds),card_index)
                                     st.switch_page("views/tickets_dashboard.py")
                                     
 else:

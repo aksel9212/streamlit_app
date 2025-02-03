@@ -10,7 +10,13 @@ from views.aidialogexpert import AiDialogExpert
 from textwrap import dedent
 from streamlit_gsheets import GSheetsConnection
 
+import gspread
+from google.oauth2.service_account import Credentials
+
 st.session_state['return_btn_label'] = 'Zurück'
+
+tickets_link = "https://docs.google.com/spreadsheets/d/175gz5oOXyfAJZjGKumuPd30YKGQl5ORitKZ-lJDGoRc/edit?usp=sharing"
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 key = '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'
 
@@ -39,6 +45,32 @@ card_style = """
 """
 st.markdown(card_style, unsafe_allow_html=True)
 
+def update_tickets(keys):
+    
+    credentials = Credentials.from_service_account_info(keys, scopes=SCOPES)
+    gc = gspread.authorize(credentials)
+    spreadsheet = gc.open_by_url(tickets_link)
+    worksheet = spreadsheet.get_worksheet(0)
+    data_dict = worksheet.get_all_records()
+    for x in st.session_state["tickets"]:
+        found = False
+        for i in range(len(data_dict)):
+            if x["User_id"] == data_dict[i]["User_id"] and x["Ticket_id"] == data_dict[i]["Ticket_id"]:
+                x["Comments"] = json.dumps(x["Comments"])
+                data_dict[i] = x
+                found = True
+                break
+        if not found:
+            data_dict.append(x)
+
+    #conn.update(spreadsheet=spreadsheet,data=data_dict)
+    keys = list(data_dict[0].keys())
+    values = [list(d.values()) for d in data_dict]
+    df = pd.DataFrame([keys] + values)
+    print("PD:",[keys] + values)
+    worksheet.update([keys] + values)
+
+
 def save_user_tickets():
     tickets = st.session_state["tickets"] 
     print(tickets)
@@ -65,6 +97,8 @@ def generate_new_ai_reply(prompt):
 
 
 load_dotenv()
+if "current_ticket" not in st.session_state:
+    st.switch_page("views/tickets_dashboard.py")
 
 if "aidialogexpert" not in st.session_state:
     # instantate with dummy data
@@ -75,13 +109,13 @@ if "aidialogexpert" not in st.session_state:
         Für die Umsatzsteuererklärung ist hier im Steuerbüro Frau Steinmeier zuständig. 
     """)
 
-    st.session_state.aidialogexpert = AiDialogExpert(st.session_state["user_id"],
-                                        st.session_state["username"],
-                                        "",#st.session_state["user_email"],
+    st.session_state.aidialogexpert = AiDialogExpert(
+                                        st.session_state["tickets"][st.session_state["current_ticket"]]["User_id"],
+                                        st.session_state["tickets"][st.session_state["current_ticket"]]["username"],
+                                        st.session_state["tickets"][st.session_state["current_ticket"]]["user_email"],
                                         TEST_USER_DATA, 
                                         None
                                     )
-
 # Display chat messages from history on app rerun
 try:
     #st.sidebar.image(f"test_app/assets/{st.session_state["tickets"][st.session_state["current_ticket"]]["State"]}.jpg",width=525) 
@@ -93,6 +127,7 @@ try:
         <p><b>Kommentare:</b></p>
     """,unsafe_allow_html=True)   
     for comment in st.session_state["tickets"][st.session_state["current_ticket"]]["Comments"]:
+
         st.markdown(f"""
             <div class='comment'>
             <p>{comment["comment"]}</p>
@@ -116,6 +151,12 @@ if comment is not None:
     st.session_state["tickets"][st.session_state["current_ticket"]]["Comments"].append(
             {"comment":comment,"expert":expert_id,"date":comment_date}
         )
-    save_user_tickets()              
+    st.session_state["tickets"][st.session_state["current_ticket"]]["Description"] = st.session_state.aidialogexpert.get_new_protocol(
+        st.session_state["tickets"][st.session_state["current_ticket"]]["Description"],comment)
+    status = st.session_state.aidialogexpert.get_status(st.session_state["tickets"][st.session_state["current_ticket"]]["Description"])
+    st.session_state["tickets"][st.session_state["current_ticket"]]["State"] = status
+
+    update_tickets(dict(st.secrets.google_creds))
+    #save_user_tickets()              
     #except:
     #    pass

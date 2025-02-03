@@ -4,9 +4,6 @@ import pandas as pd
 import json
 from streamlit_gsheets import GSheetsConnection
 
-import gspread
-from google.oauth2.service_account import Credentials
-
 st.session_state['return_btn_label'] = 'Logout'
 def check_login_(username, password):
     
@@ -41,15 +38,6 @@ def load_session():
     except FileNotFoundError:
         pass
 
-def update_tickets(keys):
-    #try:
-    tickets_link = "https://docs.google.com/spreadsheets/d/175gz5oOXyfAJZjGKumuPd30YKGQl5ORitKZ-lJDGoRc/edit?usp=sharing"
-    SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-    credentials = Credentials.from_service_account_info(dict(keys), scopes=SCOPES)
-    gc = gspread.authorize(credentials)
-    spreadsheet = gc.open_by_url(tickets_link)
-    worksheet = spreadsheet.get_worksheet(0)
-    return worksheet.get_all_records()
 # Define the main function
 def main():
     

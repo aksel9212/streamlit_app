@@ -134,3 +134,18 @@ class AiDialogExpert:
         ]
         header = self.llm_class.response_generator(messages_header)
         return header
+
+    def get_new_protocol(self, protocol, comment):
+        user_prompt = "Zusammenfassung:\n" + protocol + "\n\nExpertenkommentar:\n" + comment + "\n"
+        messages_header = [
+            {
+            "role": "system",
+            "content": SystemPrompts.SYSTEMPROMPT_COMMENT_ANALYSER,
+            },
+            {
+            "role": "user",
+            "content": user_prompt,
+            }
+        ]
+        header = self.llm_protocol.response_generator(messages_header)
+        return header
