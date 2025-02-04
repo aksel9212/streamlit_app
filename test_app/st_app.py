@@ -41,9 +41,6 @@ def load_session():
 # Define the main function
 def main():
     
-    st.info(update_tickets( st.secrets.google_creds ))
-
-
     load_session()
 
     if "logged_in" not in st.session_state:
@@ -71,8 +68,7 @@ def main():
                 st.rerun()
             else:
                 st.error("Invalid username or password.")
-        if st.button("Log as expert"):
-            st.switch_page("../experts_test_app/views/tickets_dashboard.py")
+
     # Dashboard Page
     else:
         project_1_page = st.Page(
@@ -107,6 +103,7 @@ def main():
             st.rerun()
         
         save_session()
+
 
 # Run the app
 if __name__ == "__main__":

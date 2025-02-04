@@ -8,13 +8,31 @@ import codecs
 from views.aidialogexpert import AiDialogExpert
 from textwrap import dedent
 from streamlit_gsheets import GSheetsConnection
-
+import gspread
+from google.oauth2.service_account import Credentials
 st.session_state['return_btn_label'] = 'Zurück'
 
 key = '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'
+tickets_link = "https://docs.google.com/spreadsheets/d/175gz5oOXyfAJZjGKumuPd30YKGQl5ORitKZ-lJDGoRc/edit?usp=sharing"
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 if "GROQAPI" not in os.environ:
     os.environ['GROQAPI'] = key
+
+
+def update_tickets(keys):
+    
+    credentials = Credentials.from_service_account_info(keys, scopes=SCOPES)
+    gc = gspread.authorize(credentials)
+    spreadsheet = gc.open_by_url(tickets_link)
+    worksheet = spreadsheet.get_worksheet(0)
+    data_dict = st.session_state["tickets"]
+    #conn.update(spreadsheet=spreadsheet,data=data_dict)
+    keys = list(data_dict[0].keys())
+    values = [list(d.values()) for d in data_dict]
+    df = pd.DataFrame([keys] + values)
+    worksheet.update([keys] + values)
+
 
 def save_user_tickets():
     tickets = st.session_state["tickets"] 
@@ -114,7 +132,7 @@ if text_prompt is not None:
     header = st.session_state.aidialogexpert.get_ticket_header(protocol)
     st.session_state["tickets"][st.session_state["current_ticket"]]["Header"] = header
 
-    save_user_tickets()              
+    update_tickets(dict(st.secrets.google_creds))              
 
     # debug output in sidebar
     #with st.sidebar:

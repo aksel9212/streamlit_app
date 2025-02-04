@@ -14,13 +14,11 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 
 def delete_tickets(keys,index):
-    st.session_state["tickets"].pop(index)
     credentials = Credentials.from_service_account_info(keys, scopes=SCOPES)
     gc = gspread.authorize(credentials)
     spreadsheet = gc.open_by_url(tickets_link)
     worksheet = spreadsheet.get_worksheet(0)
     data_dict = worksheet.get_all_records()
-    
     n = 0
     found = False
     for i in range(len(data_dict)):
@@ -28,17 +26,18 @@ def delete_tickets(keys,index):
             n = i
             found = True
             break
-    print("found:",found,"n:",n)
+    
     if not found:
         return False
     
     data_dict.pop(n)
-    print(data_dict)
+    st.session_state["tickets"].pop(index)
     #conn.update(spreadsheet=spreadsheet,data=data_dict)
     keys = list(data_dict[0].keys())
     values = [list(d.values()) for d in data_dict]
     df = pd.DataFrame([keys] + values)
-    print("PD:",[keys] + values)
+    
+    worksheet.clear()
     worksheet.update([keys] + values)
 
 def load_tickets(keys):
@@ -74,10 +73,10 @@ card_style = """
     <style>
         .stButton{
             display: flex;
-            /*justify-content: center;
-            margin-top:-70px;*/
+            justify-content: center;
+            /*margin-top:-70px;*/
         }
-        .st-emotion-cache-1dtfyw6 {
+        .st-emotion-cache-gcl8vn {
             margin-left:30px;
         }
         .stImage{

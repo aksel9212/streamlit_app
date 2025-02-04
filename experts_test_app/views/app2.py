@@ -45,7 +45,7 @@ card_style = """
 """
 st.markdown(card_style, unsafe_allow_html=True)
 
-def update_tickets(keys):
+def update_tickets(keys,deletion=False):
     
     credentials = Credentials.from_service_account_info(keys, scopes=SCOPES)
     gc = gspread.authorize(credentials)
@@ -68,6 +68,8 @@ def update_tickets(keys):
     values = [list(d.values()) for d in data_dict]
     df = pd.DataFrame([keys] + values)
     print("PD:",[keys] + values)
+    if deletion:
+        worksheet.clear()
     worksheet.update([keys] + values)
 
 
