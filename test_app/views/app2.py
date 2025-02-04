@@ -12,7 +12,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 st.session_state['return_btn_label'] = 'Zurück'
 
-key = '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'
+key = st.secrets.groq.groqkey
 tickets_link = "https://docs.google.com/spreadsheets/d/175gz5oOXyfAJZjGKumuPd30YKGQl5ORitKZ-lJDGoRc/edit?usp=sharing"
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
@@ -110,6 +110,8 @@ for message in dialog:
 text_prompt = st.chat_input("Was möchten Sie wissen?")
 
 if text_prompt is not None:
+    if "current_ticket" not in st.session_state:
+        st.switch_page("views/tickets_dashboard.py")
     # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(text_prompt)
@@ -131,7 +133,7 @@ if text_prompt is not None:
     
     header = st.session_state.aidialogexpert.get_ticket_header(protocol)
     st.session_state["tickets"][st.session_state["current_ticket"]]["Header"] = header
-
+    st.switch_page("views/app2.py")
     update_tickets(dict(st.secrets.google_creds))              
 
     # debug output in sidebar

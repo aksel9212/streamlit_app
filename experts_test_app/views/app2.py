@@ -18,7 +18,7 @@ st.session_state['return_btn_label'] = 'Zurück'
 tickets_link = "https://docs.google.com/spreadsheets/d/175gz5oOXyfAJZjGKumuPd30YKGQl5ORitKZ-lJDGoRc/edit?usp=sharing"
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
-key = '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'
+key = st.secrets.groq.groqkey
 
 if "GROQAPI" not in os.environ:
     os.environ['GROQAPI'] = key
