@@ -44,8 +44,8 @@ card_style = """
     <style>
         .stButton{
             display: flex;
-            /*justify-content: center;
-            margin-top:-70px;*/
+            justify-content: center;
+            /*margin-top:-70px;*/
         }
         .st-emotion-cache-1dtfyw6 {
             margin-left:30px;
