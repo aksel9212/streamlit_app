@@ -128,8 +128,8 @@ if submitted:
             "Description":'',
             "Priority": priority,
             "State": 1,
-            "Dialog":"",
-            "Comments":'',
+            "Dialog":"[]",
+            "Comments":"[]",
             "Username":name,
             "Header":"New Ticket",
             "User_email":email

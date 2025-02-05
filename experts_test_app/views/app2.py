@@ -57,6 +57,7 @@ def update_tickets(keys,deletion=False):
         for i in range(len(data_dict)):
             if x["User_id"] == data_dict[i]["User_id"] and x["Ticket_id"] == data_dict[i]["Ticket_id"]:
                 x["Comments"] = json.dumps(x["Comments"])
+                print("#############",x["Comments"],type(x["Comments"]))
                 data_dict[i] = x
                 found = True
                 break
