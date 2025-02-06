@@ -50,13 +50,7 @@ def load_session():
 
 # Define the main function
 def main():
-    import random
-    import string
-
-    length = 8
-    random_string = ''.join(random.choices(string.digits, k=length))
-    with open("file.txt","w") as f:
-        f.write(random_string)
+    
     load_session()
 
     if "logged_in" not in st.session_state:

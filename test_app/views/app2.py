@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import pandas as pd
 import sys
 import codecs
-from views.aidialogexpert import AiDialogExpert
+from utils.aidialogexpert import AiDialogExpert
 from textwrap import dedent
 from streamlit_gsheets import GSheetsConnection
 import gspread
@@ -94,7 +94,7 @@ with st.sidebar:
     st.session_state.aidialogexpert.set_dialog(dialog)
     try:
         #st.markdown(st.session_state["tickets"][st.session_state["current_ticket"]]["Description"])
-        st.sidebar.image(f"test_app/assets/{st.session_state["tickets"][st.session_state["current_ticket"]]["State"]}.jpg",width=525) 
+        st.sidebar.image(f"assets/{st.session_state["tickets"][st.session_state["current_ticket"]]["State"]}.jpg",width=525) 
         st.markdown(f"<p><b>{st.session_state["tickets"][st.session_state["current_ticket"]]["Header"]}</b></p>"
         ,unsafe_allow_html=True)
     except:
@@ -133,9 +133,9 @@ if text_prompt is not None:
     
     header = st.session_state.aidialogexpert.get_ticket_header(protocol)
     st.session_state["tickets"][st.session_state["current_ticket"]]["Header"] = header
-    st.switch_page("views/app2.py")
+    
     update_tickets(dict(st.secrets.google_creds))              
-
+    st.switch_page("views/app2.py")
     # debug output in sidebar
     #with st.sidebar:
         #st.markdown(protocol)
@@ -143,3 +143,13 @@ if text_prompt is not None:
     #    st.markdown("## Klassifikation: ##")
     #    st.sidebar.image(f"test_app/assets/{status}.jpg",width=50)
 
+# JavaScript for auto-scrolling to the bottom
+scroll_script = """
+<script>
+    const chatContainer = parent.document.querySelector('.stChatContainer');
+    if (chatContainer) {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+</script>
+"""
+st.markdown(scroll_script, unsafe_allow_html=True)

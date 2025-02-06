@@ -1,8 +1,12 @@
 import streamlit as st
 import pandas as pd
-import json,os
+import json,os,sys
 from datetime import datetime
-from views.aidialogexpert import AiDialogExpert
+
+directory = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+sys.path.append(directory)
+
+from utils.aidialogexpert import AiDialogExpert
 from streamlit_gsheets import GSheetsConnection
 from streamlit_javascript import st_javascript
 
@@ -23,6 +27,16 @@ def load_tickets(keys):
     worksheet = spreadsheet.get_worksheet(0)
     st.session_state['tickets'] = worksheet.get_all_records()
 
+def update_tickets(keys):
+    credentials = Credentials.from_service_account_info(keys, scopes=SCOPES)
+    gc = gspread.authorize(credentials)
+    spreadsheet = gc.open_by_url(tickets_link)
+    worksheet = spreadsheet.get_worksheet(0)
+    data_dict = st.session_state["tickets"]
+    keys = list(data_dict[0].keys())
+    values = [list(d.values()) for d in data_dict]
+    df = pd.DataFrame([keys] + values)
+    worksheet.update([keys] + values)
 
 def load_user_tickets():
     try:
@@ -241,6 +255,7 @@ if st.session_state["tickets"]:
                         if st.session_state["tickets"][card_index]["State"] != 3:
                             if st.button(f"Mark as Solved", key=f"solved_{card_index}"):
                                 st.session_state["tickets"][card_index]["State"] = 3
+                                update_tickets(dict(st.secrets.google_creds))
                                 st.switch_page("views/tickets_dashboard.py")
 
         if st.session_state['n_tickets'] == 0:
@@ -250,6 +265,6 @@ else:
     st.info("No tickets submitted yet.")
 
 
-st.image(f"test_app/assets/1.png")
-st.image(f"test_app/assets/2.png")
-st.image(f"test_app/assets/3.png")
+st.image(f"assets/1.png")
+st.image(f"assets/2.png")
+st.image(f"assets/3.png")

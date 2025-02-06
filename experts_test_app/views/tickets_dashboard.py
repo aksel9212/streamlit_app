@@ -1,8 +1,12 @@
 import streamlit as st
 import pandas as pd
-import json,os
+import json,os,sys
 from datetime import datetime
-from views.aidialogexpert import AiDialogExpert
+
+directory = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+sys.path.append(directory)
+
+from utils.aidialogexpert import AiDialogExpert
 from streamlit_gsheets import GSheetsConnection
 from streamlit_javascript import st_javascript
 import gspread
@@ -11,6 +15,34 @@ from google.oauth2.service_account import Credentials
 st.session_state['return_btn_label'] = 'Logout'
 tickets_link = "https://docs.google.com/spreadsheets/d/175gz5oOXyfAJZjGKumuPd30YKGQl5ORitKZ-lJDGoRc/edit?usp=sharing"
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+
+
+def update_tickets(keys,deletion=False):
+    
+    credentials = Credentials.from_service_account_info(keys, scopes=SCOPES)
+    gc = gspread.authorize(credentials)
+    spreadsheet = gc.open_by_url(tickets_link)
+    worksheet = spreadsheet.get_worksheet(0)
+    data_dict = worksheet.get_all_records()
+    for x in st.session_state["tickets"]:
+        found = False
+        for i in range(len(data_dict)):
+            if x["User_id"] == data_dict[i]["User_id"] and x["Ticket_id"] == data_dict[i]["Ticket_id"]:
+                x["Comments"] = json.dumps(x["Comments"])
+                data_dict[i] = x
+                found = True
+                break
+        if not found:
+            data_dict.append(x)
+
+    #conn.update(spreadsheet=spreadsheet,data=data_dict)
+    keys = list(data_dict[0].keys())
+    values = [list(d.values()) for d in data_dict]
+    df = pd.DataFrame([keys] + values)
+    print("PD:",[keys] + values)
+    if deletion:
+        worksheet.clear()
+    worksheet.update([keys] + values)
 
 
 def delete_tickets(keys,index):
@@ -233,6 +265,7 @@ if st.session_state["tickets"]:
                             if st.session_state["tickets"][card_index]["State"] != 3:
                                 if st.button(f"Mark ticket as solved", key=f"solved_{card_index}"):
                                     st.session_state["tickets"][card_index]["State"] = 3
+                                    update_tickets(dict(st.secrets.google_creds))
                                     st.switch_page("views/tickets_dashboard.py")
                         with col3:
                             if st.button("Delete ticket", key=f"delete_{card_index}"):
@@ -243,6 +276,6 @@ else:
     st.info("No tickets submitted yet.")
 
 
-st.image(f"test_app/assets/1.png")
-st.image(f"test_app/assets/2.png")
-st.image(f"test_app/assets/3.png")
+st.image(f"assets/1.png")
+st.image(f"assets/2.png")
+st.image(f"assets/3.png")

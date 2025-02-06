@@ -1,11 +1,11 @@
-from views.airesponsegenerator import AiResponseGenerator
+from utils.airesponsegenerator import AiResponseGenerator
 import json
 import os
 from dotenv import load_dotenv
 import sys
 import codecs
-from views.status_classifier import StatusClassification, States
-from views.system_prompts import SystemPrompts
+from utils.status_classifier import StatusClassification, States
+from utils.system_prompts import SystemPrompts
 
 LLM_MODEL_ANALYSE = "llama-3.3-70b-versatile"         # GROQ: llama-3.2-90b-vision-preview llama-3.3-70b-versatile gemma2-9b-it
                                             # OPENAI: gpt-3.5-turbo gpt-4o 
