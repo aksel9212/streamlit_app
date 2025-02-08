@@ -67,7 +67,7 @@ def update_tickets(keys,deletion=False):
     keys = list(data_dict[0].keys())
     values = [list(d.values()) for d in data_dict]
     df = pd.DataFrame([keys] + values)
-    print("PD:",[keys] + values)
+    
     if deletion:
         worksheet.clear()
     worksheet.update([keys] + values)
@@ -118,6 +118,13 @@ if "aidialogexpert" not in st.session_state:
                                         TEST_USER_DATA, 
                                         None
                                     )
+with st.sidebar:
+    try:
+        st.sidebar.image(f"assets/{st.session_state["tickets"][st.session_state["current_ticket"]]["State"]}.jpg",width=525) 
+        
+    except:
+        pass
+
 # Display chat messages from history on app rerun
 try:
     #st.sidebar.image(f"test_app/assets/{st.session_state["tickets"][st.session_state["current_ticket"]]["State"]}.jpg",width=525) 

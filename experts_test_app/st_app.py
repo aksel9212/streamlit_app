@@ -92,7 +92,7 @@ def main():
             title="Edit ticket",
             icon=":material/smart_toy:",
         )
-
+        st.markdown(f"<div style='display:flex;justify-content:end;font-size:20px;'><p style='border-bottom:4px solid #00A2E8;'><b>{st.session_state["username"]}</b></p></div>",unsafe_allow_html=True)
         pg = st.navigation([project_1_page, project_2_page],)
 
 
