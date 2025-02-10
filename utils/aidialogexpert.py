@@ -7,12 +7,12 @@ import codecs
 from utils.status_classifier import StatusClassification, States
 from utils.system_prompts import SystemPrompts
 
-LLM_MODEL_ANALYSE = "deepseek-chat"         # GROQ: llama-3.2-90b-vision-preview llama-3.3-70b-versatile gemma2-9b-it
+LLM_MODEL_ANALYSE = "llama-3.3-70b-versatil"         # GROQ: llama-3.2-90b-vision-preview llama-3.3-70b-versatile gemma2-9b-it
                                             # OPENAI: gpt-3.5-turbo gpt-4o 
                                             # XAI: "grok-beta"
                                             # DEEPSEEK: deepseek-chat
                                             # GOOGLE: gemini-1.5-pro
-LLM_PROVIDER_ANALYSE = "DEEPSEEK"             # GOOGLE GROQ OPENAI XAI DEEPSEEK
+LLM_PROVIDER_ANALYSE = "GROQ"             # GOOGLE GROQ OPENAI XAI DEEPSEEK
 
 LLM_MODEL_PROTOCOL = "llama-3.3-70b-versatile"        # GROQ: llama-3.2-90b-vision-preview llama-3.3-70b-versatile gemma2-9b-it
 LLM_PROVIDER_PROTOCOL = "GROQ"          # GOOGLE GROQ OPENAI XAI DEEPSEEK
