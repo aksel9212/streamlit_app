@@ -12,16 +12,19 @@ import gspread
 from google.oauth2.service_account import Credentials
 st.session_state['return_btn_label'] = 'Zurück'
 
-key = st.secrets.groq.groqkey
+groq_key = st.secrets.groq.groqkey
+deepseek_key = st.secrets.deepseek.deepseek_key
+
 tickets_link = "https://docs.google.com/spreadsheets/d/175gz5oOXyfAJZjGKumuPd30YKGQl5ORitKZ-lJDGoRc/edit?usp=sharing"
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 if "GROQAPI" not in os.environ:
-    os.environ['GROQAPI'] = key
+    os.environ['GROQAPI'] = groq_key
+if "DEEPSEEK_API_KEY" not in os.environ:
+    os.environ['DEEPSEEK_API_KEY'] = deepseek_key
 
 
 def update_tickets(keys):
-    
     credentials = Credentials.from_service_account_info(keys, scopes=SCOPES)
     gc = gspread.authorize(credentials)
     spreadsheet = gc.open_by_url(tickets_link)
