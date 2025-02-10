@@ -169,6 +169,7 @@ if comment is not None:
     st.session_state["tickets"][st.session_state["current_ticket"]]["State"] = status
 
     update_tickets(dict(st.secrets.google_creds))
+    st.switch_page("views/app2.py")
     #save_user_tickets()              
     #except:
     #    pass
